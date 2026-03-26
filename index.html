@@ -68,19 +68,22 @@
       100% { transform: translate(calc(var(--cx) * 1.2), calc(var(--cy) + 100px)) scale(0.3); opacity: 0; }
     }
 
-    /* ── Confetti pieces ── */
+    /* ── Confetti pieces (spawned in global overlay) ── */
+    .confetti-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: visible;
+    }
     .confetti-piece {
-      position: absolute; pointer-events: none; z-index: 10;
+      position: absolute; pointer-events: none;
       width: 8px; height: 8px; border-radius: 2px;
       animation: confettiBurst 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
     .confetti-rain {
-      position: absolute; pointer-events: none; z-index: 10;
+      position: absolute; pointer-events: none;
       width: 6px; height: 10px; border-radius: 1px;
       animation: confettiRain 2s ease-out forwards;
     }
     .confetti-emoji {
-      position: absolute; pointer-events: none; z-index: 10;
+      position: absolute; pointer-events: none;
       font-size: 16px;
       animation: confettiEmoji 1.6s ease-out forwards;
     }
@@ -331,6 +334,9 @@
 
   <!-- Sparkles background -->
   <div class="sparkles-container" id="sparkles"></div>
+
+  <!-- Confetti overlay (global, above everything) -->
+  <div class="confetti-overlay" id="confetti-overlay"></div>
 
   <!-- Nav -->
   <div class="nav">
@@ -588,14 +594,16 @@
       isLoadingWall = false;
     };
 
-    // ─── Confetti burst (EXAGGERATED) ───
+    // ─── Confetti burst (EXAGGERATED, global overlay) ───
     const CONFETTI_COLORS = ["#FFB7D5","#A8D8F0","#F0E68C","#D4A8F0","#FFBE9F","#98D8A0","#F5C78E","#8ED8D8","#FF8FAB","#89CFF0","#FFD700"];
     const CONFETTI_EMOJI = ["✿","♡","★","✦","🎉","🎂","💖","🌸","⭐","🎀","💌","✨"];
 
     function burstConfetti(card) {
+      const overlay = document.getElementById("confetti-overlay");
       const rect = card.getBoundingClientRect();
-      const originX = rect.width / 2;
-      const originY = rect.height * 0.3;
+      // Origin point in viewport coordinates
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height * 0.3;
 
       // ── Wave 1: Big explosive burst (50 pieces) ──
       for (let i = 0; i < 50; i++) {
@@ -624,11 +632,11 @@
         const shapes = ["50%", "2px", "0"];
         piece.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
 
-        card.appendChild(piece);
+        overlay.appendChild(piece);
         setTimeout(() => piece.remove(), 2500);
       }
 
-      // ── Wave 2: Raining confetti from top (20 pieces, delayed) ──
+      // ── Wave 2: Raining confetti from top of card area (20 pieces, delayed) ──
       setTimeout(() => {
         for (let i = 0; i < 20; i++) {
           const rain = document.createElement("div");
@@ -636,8 +644,8 @@
 
           const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
           rain.style.background = color;
-          rain.style.left = (Math.random() * rect.width) + "px";
-          rain.style.top = "0px";
+          rain.style.left = (rect.left + Math.random() * rect.width) + "px";
+          rain.style.top = rect.top + "px";
           rain.style.setProperty("--fall", (80 + Math.random() * 120) + "px");
           rain.style.setProperty("--spin", (360 + Math.random() * 720) + "deg");
           rain.style.animationDuration = (1.2 + Math.random() * 1) + "s";
@@ -646,7 +654,7 @@
           rain.style.height = (8 + Math.random() * 8) + "px";
           rain.style.borderRadius = Math.random() > 0.5 ? "50%" : "1px";
 
-          card.appendChild(rain);
+          overlay.appendChild(rain);
           setTimeout(() => rain.remove(), 3000);
         }
       }, 150);
@@ -667,7 +675,7 @@
         emoji.style.animationDuration = (1.2 + Math.random() * 0.6) + "s";
         emoji.style.animationDelay = (Math.random() * 0.2) + "s";
 
-        card.appendChild(emoji);
+        overlay.appendChild(emoji);
         setTimeout(() => emoji.remove(), 2500);
       }
     }
