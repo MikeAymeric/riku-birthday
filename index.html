@@ -14,7 +14,7 @@
       min-height: 100vh;
       background: linear-gradient(135deg, #FFF5F9 0%, #F0F5FF 50%, #FFFDF0 100%);
     }
-
+ 
     /* ── Animations ── */
     @keyframes sparkleFloat {
       0%, 100% { opacity: 0; transform: translateY(0) scale(0.5); }
@@ -33,7 +33,12 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
     }
-
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-2deg); }
+      75% { transform: rotate(2deg); }
+    }
+ 
     /* ── Nav ── */
     .nav {
       position: sticky; top: 0; z-index: 100;
@@ -52,19 +57,19 @@
     }
     .nav-btn.active { background: #FFB7D5; color: #FFF; }
     .nav-btn:not(.active) { background: transparent; color: #B0A0C0; }
-
+ 
     /* ── Sparkles ── */
     .sparkles-container {
       position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
     }
-
+ 
     /* ── Centered layout ── */
     .centered {
       min-height: calc(100vh - 50px);
       display: flex; align-items: center; justify-content: center;
       padding: 24px 16px; position: relative;
     }
-
+ 
     /* ── Card ── */
     .form-card {
       background: rgba(255,255,255,0.88);
@@ -81,7 +86,7 @@
       max-width: 420px; text-align: center;
       animation: popIn 0.5s ease-out;
     }
-
+ 
     /* ── Typography ── */
     .title {
       font-family: 'M PLUS Rounded 1c', sans-serif;
@@ -101,7 +106,7 @@
       display: block; font-weight: 600; font-size: 13px;
       color: #8A7A9A; margin-bottom: 6px;
     }
-
+ 
     /* ── Form elements ── */
     .input, .textarea {
       width: 100%; padding: 10px 14px; border-radius: 12px;
@@ -121,7 +126,7 @@
       margin: 4px 0 16px;
     }
     .hint { font-size: 11px; color: #C0B0D0; margin-top: 4px; }
-
+ 
     /* ── Buttons ── */
     .btn-primary {
       width: 100%; padding: 14px; border-radius: 14px; border: none;
@@ -154,7 +159,7 @@
       font-weight: 600; font-size: 13px; cursor: pointer;
       margin-top: 8px;
     }
-
+ 
     /* ── Avatar ── */
     .avatar {
       width: 60px; height: 60px; border-radius: 50%;
@@ -165,20 +170,20 @@
     .avatar-placeholder { font-size: 27px; color: #FFB7D5; }
     .avatar-sm { width: 44px; height: 44px; }
     .avatar-sm .avatar-placeholder { font-size: 20px; }
-
+ 
     /* ── Image preview ── */
     .img-preview {
       margin-top: 10px; border-radius: 12px; overflow: hidden;
       border: 2px dashed #FFB7D5;
     }
     .img-preview img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
-
+ 
     /* ── Error ── */
     .error-msg {
       color: #E06080; font-size: 13px; font-weight: 500;
       margin-bottom: 12px; text-align: center;
     }
-
+ 
     /* ── Wall ── */
     .wall-container {
       min-height: 100vh; padding: 20px 16px 60px; position: relative;
@@ -188,29 +193,35 @@
       position: relative; z-index: 1; animation: fadeSlideUp 0.6s ease-out;
     }
     .wall-header .title { font-size: 28px; margin-bottom: 4px; }
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px; max-width: 1100px; margin: 0 auto;
+ 
+    /* ── Masonry grid ── */
+    .cards-masonry {
+      column-count: 3; column-gap: 20px;
+      max-width: 1100px; margin: 0 auto;
       position: relative; z-index: 1;
     }
+    @media (max-width: 900px) { .cards-masonry { column-count: 2; } }
+    @media (max-width: 520px) { .cards-masonry { column-count: 1; max-width: 400px; } }
+ 
     .empty-wall {
       text-align: center; position: relative; z-index: 1; margin-top: 60px;
     }
-
+ 
     /* ── Birthday Card ── */
     .bday-card {
-      border-radius: 18px; padding: 20px; cursor: default;
+      break-inside: avoid;
+      border-radius: 18px; padding: 20px; cursor: pointer;
       position: relative; overflow: hidden;
+      margin-bottom: 20px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
     }
-    .bday-card:hover { transform: rotate(0deg) scale(1.03) !important; }
     .bday-card .corner-deco {
       position: absolute; top: 8px; right: 12px;
       font-size: 18px; opacity: 0.4;
     }
     .bday-card .card-header {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
     }
     .bday-card .card-name {
       margin: 0; font-family: 'Quicksand', sans-serif;
@@ -220,6 +231,32 @@
       margin: 0; font-size: 11px; color: #B0A0C0;
       font-family: 'Quicksand', sans-serif;
     }
+ 
+    /* ── Closed state: tap hint ── */
+    .bday-card .card-tap-hint {
+      text-align: center; margin-top: 12px;
+      font-size: 12px; color: #C0B0D0;
+      font-family: 'Quicksand', sans-serif; font-weight: 500;
+      animation: wiggle 2s ease-in-out infinite;
+    }
+ 
+    /* ── Card content (hidden by default, opens on click) ── */
+    .bday-card .card-content {
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease;
+      margin-top: 0;
+    }
+    .bday-card.open .card-content {
+      max-height: 2000px; opacity: 1;
+      margin-top: 12px;
+    }
+    .bday-card.open .card-tap-hint {
+      display: none;
+    }
+    .bday-card.open {
+      transform: rotate(0deg) !important;
+    }
+ 
     .bday-card .card-message {
       font-family: 'M PLUS Rounded 1c', 'Quicksand', sans-serif;
       font-size: 14px; line-height: 1.6; color: #4A3A5A;
@@ -230,28 +267,28 @@
       border-width: 2px; border-style: solid;
     }
     .bday-card .card-image img { width: 100%; display: block; }
-
+ 
     /* ── Loading ── */
     .loading {
       text-align: center; position: relative; z-index: 1;
     }
     .loading .bounce-icon { font-size: 48px; animation: bounce 1s ease-in-out infinite; }
-
+ 
     /* ── Hidden ── */
-    .hidden { display: none; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-
+ 
   <!-- Sparkles background -->
   <div class="sparkles-container" id="sparkles"></div>
-
+ 
   <!-- Nav -->
   <div class="nav">
     <button class="nav-btn active" id="nav-write" onclick="showPage('write')">✏️ Scrivi</button>
     <button class="nav-btn" id="nav-wall" onclick="showPage('wall')">🎀 Bacheca</button>
   </div>
-
+ 
   <!-- ═══════ WRITE PAGE ═══════ -->
   <div id="page-write" class="centered">
     <div class="form-card" id="write-form">
@@ -260,10 +297,10 @@
         <h1 class="title">Un biglietto per Riku!</h1>
         <p class="subtitle">Scrivi un messaggio di auguri speciale ✿</p>
       </div>
-
+ 
       <label class="label">Il tuo nome ✦</label>
       <input type="text" class="input" id="input-name" placeholder="Come ti chiami?" maxlength="40" />
-
+ 
       <label class="label">Il tuo avatar ♡</label>
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
         <div class="avatar" id="avatar-preview">
@@ -275,11 +312,11 @@
           <p class="hint">Opzionale! (max ~128x128)</p>
         </div>
       </div>
-
+ 
       <label class="label">Il tuo messaggio ⊹</label>
       <textarea class="textarea" id="input-message" placeholder="Scrivi qui il tuo augurio per Riku..." rows="5" maxlength="1000" oninput="updateCharCount()"></textarea>
       <p class="char-count" id="char-count">0/1000</p>
-
+ 
       <label class="label">Allega un'immagine ☆</label>
       <div style="margin-bottom:20px;">
         <button class="btn-upload" id="btn-image" onclick="document.getElementById('input-image').click()">Carica immagine</button>
@@ -289,11 +326,11 @@
           <img id="image-preview-img" src="" alt="preview" />
         </div>
       </div>
-
+ 
       <p class="error-msg hidden" id="error-msg"></p>
       <button class="btn-primary" id="btn-send" onclick="handleSubmit()">Invia il biglietto 💕</button>
     </div>
-
+ 
     <!-- Success state -->
     <div class="form-card success hidden" id="write-success">
       <div style="font-size:64px; margin-bottom:12px;">🎉</div>
@@ -303,53 +340,53 @@
       <button class="btn-secondary" onclick="resetForm()">Scrivi un altro messaggio</button>
     </div>
   </div>
-
+ 
   <!-- ═══════ WALL PAGE ═══════ -->
   <div id="page-wall" class="wall-container hidden">
     <div class="wall-header">
       <span style="font-size:52px;">🎂</span>
       <h1 class="title" style="font-size:28px; margin-bottom:4px;">Buon Compleanno Riku!</h1>
       <p class="subtitle">Ecco i messaggi dei tuoi amici ♡</p>
+      <p class="subtitle" style="margin-top:6px; font-size:12px; color:#D4A8F0;">Tocca un bigliettino per aprirlo! 💌</p>
       <button class="btn-refresh" onclick="loadWall()">↻ Aggiorna</button>
     </div>
-
+ 
     <div id="wall-loading" class="loading">
       <div class="bounce-icon">✿</div>
       <p class="subtitle" style="margin-top:12px;">Caricamento biglietti...</p>
     </div>
-
+ 
     <div id="wall-empty" class="empty-wall hidden">
       <p style="font-size:48px;">(◕‿◕✿)</p>
       <p class="subtitle">Nessun biglietto ancora... arriveranno presto!</p>
     </div>
-
-    <div class="cards-grid" id="cards-grid"></div>
+ 
+    <div class="cards-masonry" id="cards-grid"></div>
   </div>
-
+ 
   <!-- ═══════ FIREBASE ═══════ -->
   <script type="module">
-    // ─── Firebase SDK (v9 compat via CDN) ───
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
+ 
     // ──────────────────────────────────────────────
     // 🔧 CONFIGURA QUI IL TUO PROGETTO FIREBASE 🔧
     // ──────────────────────────────────────────────
     const firebaseConfig = {
-      apiKey: "AIzaSyBKAjD7m6O8K6xycLS1BjJOKyq5_Pa1cUI",
-      authDomain: "riku-bday.firebaseapp.com",
-      projectId: "riku-bday",
-      storageBucket: "riku-bday.firebasestorage.app",
-      messagingSenderId: "117157115435",
-      appId: "1:117157115435:web:b960222b3f2c963cd99c6e"
+      apiKey: "LA-TUA-API-KEY",
+      authDomain: "IL-TUO-PROGETTO.firebaseapp.com",
+      projectId: "IL-TUO-PROGETTO",
+      storageBucket: "IL-TUO-PROGETTO.firebasestorage.app",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
     };
     // ──────────────────────────────────────────────
-
+ 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
-
+ 
     const CARD_COLORS = [
       { bg: "#FFF0F5", border: "#FFB7D5", shadow: "rgba(255,183,213,0.35)" },
       { bg: "#F0F8FF", border: "#A8D8F0", shadow: "rgba(168,216,240,0.35)" },
@@ -361,11 +398,13 @@
       { bg: "#F0FFFF", border: "#8ED8D8", shadow: "rgba(142,216,216,0.35)" },
     ];
     const KAOMOJI = ["(◕‿◕✿)", "(*≧ω≦)", "(ﾉ◕ヮ◕)ﾉ*:・゚✧", "♡(ŐωŐ人)", "(✿╹◡╹)", "ヽ(>∀<☆)ノ", "(づ｡◕‿‿◕｡)づ", "☆*:.｡.o(≧▽≦)o.｡.:*☆"];
-
+ 
     // ─── State ───
     let avatarDataUrl = null;
     let imageDataUrl = null;
-
+    let currentPage = null;
+    let isLoadingWall = false;
+ 
     // ─── Expose to global scope ───
     window.handleAvatar = async function(input) {
       const file = input.files[0];
@@ -375,7 +414,7 @@
       preview.innerHTML = `<img src="${avatarDataUrl}" alt="avatar" />`;
       document.getElementById("btn-avatar").textContent = "Cambia foto";
     };
-
+ 
     window.handleImage = async function(input) {
       const file = input.files[0];
       if (!file) return;
@@ -386,34 +425,33 @@
       container.classList.remove("hidden");
       document.getElementById("btn-image").textContent = "Cambia immagine";
     };
-
+ 
     window.updateCharCount = function() {
       const len = document.getElementById("input-message").value.length;
       document.getElementById("char-count").textContent = `${len}/1000`;
     };
-
+ 
     window.handleSubmit = async function() {
       const name = document.getElementById("input-name").value.trim();
       const message = document.getElementById("input-message").value.trim();
       const errorEl = document.getElementById("error-msg");
       const btnSend = document.getElementById("btn-send");
-
+ 
       if (!name || !message) {
         errorEl.textContent = "Scrivi il tuo nome e un messaggio! ♡";
         errorEl.classList.remove("hidden");
         return;
       }
-
+ 
       btnSend.disabled = true;
       btnSend.textContent = "Invio in corso...";
       errorEl.classList.add("hidden");
-
+ 
       try {
-        // Upload images to Firebase Storage if present
         let avatarUrl = null;
         let imageUrl = null;
         const msgId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-
+ 
         if (avatarDataUrl) {
           const avatarRef = storageRef(storage, `avatars/${msgId}`);
           await uploadString(avatarRef, avatarDataUrl, "data_url");
@@ -424,7 +462,7 @@
           await uploadString(imgRef, imageDataUrl, "data_url");
           imageUrl = await getDownloadURL(imgRef);
         }
-
+ 
         await addDoc(collection(db, "messages"), {
           name,
           message,
@@ -434,22 +472,21 @@
           colorIdx: Math.floor(Math.random() * CARD_COLORS.length),
           kaomoji: KAOMOJI[Math.floor(Math.random() * KAOMOJI.length)],
         });
-
-        // Show success
+ 
         document.getElementById("write-form").classList.add("hidden");
         document.getElementById("write-success").classList.remove("hidden");
         document.getElementById("success-kaomoji").textContent = KAOMOJI[Math.floor(Math.random() * KAOMOJI.length)];
-
+ 
       } catch (e) {
         console.error(e);
         errorEl.textContent = "Qualcosa è andato storto... riprova! (╥_╥)";
         errorEl.classList.remove("hidden");
       }
-
+ 
       btnSend.disabled = false;
       btnSend.textContent = "Invia il biglietto 💕";
     };
-
+ 
     window.resetForm = function() {
       document.getElementById("input-name").value = "";
       document.getElementById("input-message").value = "";
@@ -465,43 +502,47 @@
       document.getElementById("write-form").classList.remove("hidden");
       document.getElementById("write-success").classList.add("hidden");
     };
-
+ 
     window.loadWall = async function() {
+      if (isLoadingWall) return;
+      isLoadingWall = true;
+ 
       const loading = document.getElementById("wall-loading");
       const empty = document.getElementById("wall-empty");
       const grid = document.getElementById("cards-grid");
-
+ 
       loading.classList.remove("hidden");
       empty.classList.add("hidden");
       grid.innerHTML = "";
-
+ 
       try {
         const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
         const snapshot = await getDocs(q);
         const msgs = [];
         snapshot.forEach(doc => msgs.push(doc.data()));
-
+ 
         loading.classList.add("hidden");
-
+ 
         if (msgs.length === 0) {
           empty.classList.remove("hidden");
-          return;
+        } else {
+          msgs.forEach((msg, i) => {
+            grid.appendChild(createCard(msg, i));
+          });
         }
-
-        msgs.forEach((msg, i) => {
-          grid.appendChild(createCard(msg, i));
-        });
-
+ 
       } catch (e) {
         console.error(e);
         loading.innerHTML = '<p class="subtitle">Errore nel caricamento (╥_╥)</p>';
       }
+ 
+      isLoadingWall = false;
     };
-
+ 
     function createCard(msg, index) {
       const color = CARD_COLORS[msg.colorIdx || 0];
       const rotation = ((index % 5) - 2) * 1.5;
-
+ 
       const card = document.createElement("div");
       card.className = "bday-card";
       card.style.background = color.bg;
@@ -509,24 +550,40 @@
       card.style.boxShadow = `0 6px 24px ${color.shadow}`;
       card.style.transform = `rotate(${rotation}deg)`;
       card.style.animation = `fadeSlideUp 0.5s ease-out ${index * 0.08}s both`;
-
+ 
+      // Click/tap to open
+      card.addEventListener("click", () => {
+        const wasOpen = card.classList.contains("open");
+        card.classList.toggle("open");
+        if (wasOpen) {
+          card.style.transform = `rotate(${rotation}deg)`;
+        } else {
+          card.style.transform = "rotate(0deg)";
+        }
+      });
+ 
+      // Hover effects (desktop only, closed cards)
       card.addEventListener("mouseenter", () => {
-        card.style.transform = "rotate(0deg) scale(1.03)";
-        card.style.boxShadow = `0 10px 36px ${color.shadow}`;
+        if (!card.classList.contains("open")) {
+          card.style.transform = "rotate(0deg) scale(1.03)";
+          card.style.boxShadow = `0 10px 36px ${color.shadow}`;
+        }
       });
       card.addEventListener("mouseleave", () => {
-        card.style.transform = `rotate(${rotation}deg) scale(1)`;
+        if (!card.classList.contains("open")) {
+          card.style.transform = `rotate(${rotation}deg) scale(1)`;
+        }
         card.style.boxShadow = `0 6px 24px ${color.shadow}`;
       });
-
+ 
       const avatarHtml = msg.avatar
         ? `<img src="${msg.avatar}" alt="avatar" />`
         : '<span class="avatar-placeholder">✿</span>';
-
+ 
       const imageHtml = msg.image
         ? `<div class="card-image" style="border-color:${color.border}"><img src="${msg.image}" alt="allegato" /></div>`
         : '';
-
+ 
       card.innerHTML = `
         <span class="corner-deco" style="color:${color.border}">✿</span>
         <div class="card-header">
@@ -536,19 +593,22 @@
             <p class="card-kaomoji">${msg.kaomoji || ''}</p>
           </div>
         </div>
-        <p class="card-message">${escapeHtml(msg.message)}</p>
-        ${imageHtml}
+        <div class="card-tap-hint">💌 Tocca per aprire</div>
+        <div class="card-content">
+          <p class="card-message">${escapeHtml(msg.message)}</p>
+          ${imageHtml}
+        </div>
       `;
-
+ 
       return card;
     }
-
+ 
     function escapeHtml(str) {
       const div = document.createElement("div");
       div.textContent = str;
       return div.innerHTML;
     }
-
+ 
     // ─── Image compression ───
     function compressImage(file, maxW, maxH, quality) {
       return new Promise((resolve) => {
@@ -569,11 +629,11 @@
         reader.readAsDataURL(file);
       });
     }
-
+ 
     // ─── Sparkles ───
     const SPARKLES = ["✦","✧","⋆","˚","｡","⊹","✿","❀","♡","☆","★","✩"];
     const COLORS = ["#FFB7D5","#A8D8F0","#F0E68C","#D4A8F0","#FFBE9F","#98D8A0"];
-
+ 
     function createSparkles() {
       const container = document.getElementById("sparkles");
       for (let i = 0; i < 30; i++) {
@@ -592,22 +652,31 @@
         container.appendChild(span);
       }
     }
-
-    // ─── Page routing ───
+ 
+    // ─── Page routing (fixed: no double triggers) ───
     window.showPage = function(page) {
+      if (page === currentPage) return;
+      currentPage = page;
+ 
       document.getElementById("page-write").classList.toggle("hidden", page !== "write");
       document.getElementById("page-wall").classList.toggle("hidden", page !== "wall");
       document.getElementById("nav-write").classList.toggle("active", page === "write");
       document.getElementById("nav-wall").classList.toggle("active", page === "wall");
-      window.location.hash = page;
+ 
+      // Update hash without re-triggering hashchange
+      const currentHash = window.location.hash.replace("#", "");
+      if (currentHash !== page) {
+        history.replaceState(null, "", `#${page}`);
+      }
+ 
       if (page === "wall") loadWall();
     };
-
+ 
     // ─── Init ───
     createSparkles();
     const hash = window.location.hash.replace("#", "");
-    if (hash === "wall") showPage("wall");
-
+    showPage(hash === "wall" ? "wall" : "write");
+ 
     window.addEventListener("hashchange", () => {
       const h = window.location.hash.replace("#", "");
       if (h === "wall" || h === "write") showPage(h);
